@@ -18,7 +18,7 @@ def gif_media_id(*url):
 searched = {}
 
 
-@bot.register(except_self=False)
+@bot.register(msg_types=TEXT, except_self=False)
 def accept(msg):
     if msg.is_at:
         keyword = re.sub('@\S+', '', msg.text)
@@ -32,6 +32,11 @@ def accept(msg):
         searched[keyword] = imgs
     media_id = gif_media_id(*imgs.pop(0))
     msg.reply_image('.gif', media_id=media_id)
+
+
+@bot.register(msg_types=FRIENDS)
+def gdg_offical_group(msg):
+    msg.card.accept()
 
 
 bot.join()
