@@ -20,18 +20,14 @@ searched = {}
 
 @bot.register(msg_types=TEXT, except_self=False)
 def accept(msg):
-    if msg.is_at:
-        keyword = re.sub('@\S+', '', msg.text)
-    elif msg.sender == bot.self and msg.text.endswith('.gif'):
+    if msg.text.endswith('.gif'):
         keyword = msg.text[:-4]
-    else:
-        return
-    imgs = keyword in searched and searched[keyword]
-    if not imgs:
-        imgs = meme.search(keyword)
-        searched[keyword] = imgs
-    media_id = gif_media_id(*imgs.pop(0))
-    msg.reply_image('.gif', media_id=media_id)
+        imgs = keyword in searched and searched[keyword]
+        if not imgs:
+            imgs = meme.search(keyword)
+            searched[keyword] = imgs
+        media_id = gif_media_id(*imgs.pop(0))
+        msg.reply_image('.gif', media_id=media_id)
 
 
 @bot.register(msg_types=FRIENDS)
