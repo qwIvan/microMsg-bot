@@ -1,17 +1,20 @@
 import meme
 from wxpy import *
 from functools import lru_cache
-bot = Bot(cache_path=True, console_qr=True)
-# bot = Bot(console_qr=True)
+from tempfile import NamedTemporaryFile
+# bot = Bot(cache_path=True, console_qr=True)
+bot = Bot(console_qr=True)
 
 
 @lru_cache()
 def gif_media_id(*url):
+    tmp = NamedTemporaryFile()
     try:
-        gif = meme.download_gif(*url)
-        return bot.upload_file(gif.name)
+        meme.download_gif(tmp, *url)
+        media_id = bot.upload_file(tmp.name)
     finally:
-        gif.close()
+        tmp.close()
+    return media_id
 
 
 searched = {}
@@ -34,5 +37,12 @@ def accept(msg):
 def gdg_offical_group(msg):
     msg.card.accept()
 
+
+def print_cookies(bot=bot):
+    for n, v in bot.core.s.cookies.items():
+        print("document.cookie='{}={};domain=.qq.com;expires=Fri, 31 Dec 9999 23:59:59 GMT'".format(n, v))
+import sys
+if len(sys.argv) > 1 and sys.argv[1] == '-c':
+    print_cookies()
 
 bot.join()
