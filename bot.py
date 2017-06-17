@@ -2,8 +2,8 @@ import meme
 from wxpy import *
 from functools import lru_cache
 from tempfile import NamedTemporaryFile
-# bot = Bot(cache_path=True, console_qr=True)
-bot = Bot(console_qr=True)
+bot = Bot(cache_path=True, console_qr=True)
+# bot = Bot(console_qr=True)
 
 
 @lru_cache()
