@@ -14,10 +14,11 @@ class EmotionBot(Bot):
             _qr_callback = kwargs['qr_callback']
 
         def qr_callback(uuid, status, qrcode):
-            self.uuid = uuid
             if callable(_qr_callback):
                 _qr_callback(uuid, status, qrcode)
-            self.qr_lock.set()
+            if status == '0':
+                self.uuid = uuid
+                self.qr_lock.set()
 
         # kwargs.update(cache_path=True, qr_callback=qr_callback)
         kwargs.update(qr_callback=qr_callback)
@@ -27,11 +28,12 @@ class EmotionBot(Bot):
     def login(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.login_lock.set()
-        self.ready()
+        self.reg_event()
 
-    def ready(self):
-        self.login_lock.wait()
+    def ready(self, timeout=None):
+        self.login_lock.wait(timeout)
 
+    def reg_event(self):
         @lru_cache()
         def gif_media_id(*url):
             tmp = NamedTemporaryFile()

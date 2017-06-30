@@ -10,7 +10,8 @@ def login():
         print(uuid, status)
 
     bot = EmotionBot(qr_callback=qr_callback)
-    return '<img src=http://login.weixin.qq.com/qrcode/%s />' % bot.uuid
+    return '<img src=https://login.weixin.qq.com/qrcode/%s />' % bot.uuid
 
 
-app.run()
+if __name__ == '__main__':
+    app.run()
