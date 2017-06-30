@@ -2,3 +2,4 @@
 .ropeproject/
 __pycache__/
 wxpy.pkl
+.idea/
