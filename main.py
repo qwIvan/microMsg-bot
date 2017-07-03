@@ -11,7 +11,7 @@ def login():
     def qr_callback(uuid, status, qrcode):
         logger.info('uuid=%s, status=%s', uuid, status)
 
-    bot = EmotionBot(qr_callback=qr_callback, timeout_max=2)
+    bot = EmotionBot(qr_callback=qr_callback, timeout_max=20)
     return '<img src=http://login.weixin.qq.com/qrcode/%s >' % bot.uuid
 
 

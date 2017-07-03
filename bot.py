@@ -9,8 +9,9 @@ from tempfile import NamedTemporaryFile
 
 class EmotionBot(Bot):
     class TimeoutException(Exception):
-        def __init__(self, uuid):
+        def __init__(self, uuid, status):
             self.uuid = uuid
+            self.status = status
 
     def __init__(self, name=None, timeout_max=9, *args, **kwargs):
         self.name = name
@@ -26,10 +27,13 @@ class EmotionBot(Bot):
             if status == '0':
                 self.uuid = uuid
                 self.qr_lock.set()
-            if status == '408':
+            elif status == '408':
                 self.timeout_count += 1
                 if self.timeout_count > timeout_max:
-                    raise EmotionBot.TimeoutException(uuid)
+                    raise EmotionBot.TimeoutException(uuid, status)
+            elif status == '400':  # exit thread when time out at QR code waiting for scan
+                raise EmotionBot.TimeoutException(uuid, status)
+
             if callable(_qr_callback):
                 _qr_callback(uuid, status, qrcode)
 
@@ -68,8 +72,8 @@ class EmotionBot(Bot):
         def reply(msg):
             if msg.sender == self.self and '开启自动斗图' in msg.text:
                 self.at_reply_groups.append(msg.receiver)
-                msg.reply('@我发送文字可以自动斗图')
-                return
+                logger.info('群聊<%s>已开启自动斗图' % msg.receiver.name)
+                return '@我发送文字可以自动斗图'
 
             keyword = None
             if msg.text[-4:] in ('.gif', '.jpg'):
