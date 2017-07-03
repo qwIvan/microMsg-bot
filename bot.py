@@ -1,37 +1,53 @@
 import meme
 import threading
 from wxpy import *
+from logger import logger
 from functools import lru_cache
 from tempfile import NamedTemporaryFile
 
 
 class EmotionBot(Bot):
-    def __init__(self, *args, **kwargs):
+    class TimeoutException(Exception):
+        def __init__(self, uuid):
+            self.uuid = uuid
+
+    def __init__(self, name=None, timeout_max=9, *args, **kwargs):
+        self.name = name
         self.qr_lock = threading.Event()
-        self.login_lock = threading.Event()
+        # self.login_lock = threading.Event()
         _qr_callback = None
         if 'qr_callback' in kwargs:
             _qr_callback = kwargs['qr_callback']
+        self.timeout_count = 0
 
         def qr_callback(uuid, status, qrcode):
-            if callable(_qr_callback):
-                _qr_callback(uuid, status, qrcode)
             if status == '0':
                 self.uuid = uuid
                 self.qr_lock.set()
+            if status == '408':
+                self.timeout_count += 1
+                if self.timeout_count > timeout_max:
+                    raise EmotionBot.TimeoutException(uuid)
+            if callable(_qr_callback):
+                _qr_callback(uuid, status, qrcode)
 
         # kwargs.update(cache_path=True, qr_callback=qr_callback)
         kwargs.update(qr_callback=qr_callback)
-        threading.Thread(target=self.login, args=args, kwargs=kwargs).start()
+        self.thread = threading.Thread(target=self.login, args=args, kwargs=kwargs)
+        self.thread.start()
         self.qr_lock.wait()
 
     def login(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-        self.login_lock.set()
+        try:
+            super().__init__(*args, **kwargs)
+        except EmotionBot.TimeoutException as e:
+            logger.warning('uuid=%s timeout', e.uuid)
+            return
+        # self.login_lock.set()
         self.reg_event()
 
-    def ready(self, timeout=None):
-        self.login_lock.wait(timeout)
+    # def ready(self, timeout=None):
+    #     self.login_lock.wait(timeout)
 
     def reg_event(self):
         @lru_cache()
