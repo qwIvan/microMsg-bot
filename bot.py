@@ -74,7 +74,7 @@ class EmotionBot(Bot):
                 self.at_reply_groups.add(msg.receiver)
                 logger.info('群聊<%s>已开启自动斗图' % msg.receiver.name)
                 return '已开启，@我发送文字可以自动斗图'
-            elif msg.sender == self.self and '关闭自动斗图' in msg.text:
+            elif msg.sender == self.self and '关闭自动斗图' in msg.text and msg.receiver in self.at_reply_groups:
                 self.at_reply_groups.remove(msg.receiver)
                 logger.info('群聊<%s>已关闭自动斗图' % msg.receiver.name)
                 return '已关闭'
