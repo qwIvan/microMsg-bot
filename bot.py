@@ -1,4 +1,5 @@
 import meme
+import re
 import threading
 from wxpy import *
 from logger import logger
@@ -18,7 +19,8 @@ class EmotionBot(Bot):
         _qr_callback = None
         if 'qr_callback' in kwargs:
             _qr_callback = kwargs['qr_callback']
-        self.timeout_count = 0
+        self.timeout_count = 0  # QR code timeout count
+        self.at_reply_groups = []  # auto reply is_at msg from these groups
 
         def qr_callback(uuid, status, qrcode):
             if status == '0':
@@ -35,7 +37,7 @@ class EmotionBot(Bot):
         kwargs.update(qr_callback=qr_callback)
         self.thread = threading.Thread(target=self.login, args=args, kwargs=kwargs)
         self.thread.start()
-        self.qr_lock.wait()
+        self.qr_lock.wait()  # lock release when QR code uuid got
 
     def login(self, *args, **kwargs):
         try:
@@ -64,8 +66,17 @@ class EmotionBot(Bot):
 
         @self.register(msg_types=TEXT, except_self=False)
         def reply(msg):
+            if msg.sender == self.self and '开启自动斗图' in msg.text:
+                self.at_reply_groups.append(msg.receiver)
+                msg.reply('@我发送文字可以自动斗图')
+                return
+
+            keyword = None
             if msg.text[-4:] in ('.gif', '.jpg'):
                 keyword = msg.text[:-4]
+            elif msg.is_at and msg.sender in self.at_reply_groups:
+                keyword = re.sub('@\S+', '', msg.text)
+            if keyword:
                 imgs = keyword in searched and searched[keyword]
                 if not imgs:
                     imgs = meme.search(keyword)
