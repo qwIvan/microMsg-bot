@@ -47,7 +47,7 @@ class EmotionBot(Bot):
         try:
             super().__init__(*args, **kwargs)
         except EmotionBot.TimeoutException as e:
-            logger.warning('uuid=%s timeout', e.uuid)
+            logger.warning('uuid=%s, status=%s, timeout', e.uuid, e.status)
             return
         # self.login_lock.set()
         self.reg_event()
