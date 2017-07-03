@@ -21,7 +21,7 @@ class EmotionBot(Bot):
         if 'qr_callback' in kwargs:
             _qr_callback = kwargs['qr_callback']
         self.timeout_count = 0  # QR code timeout count
-        self.at_reply_groups = []  # auto reply is_at msg from these groups
+        self.at_reply_groups = set()  # auto reply is_at msg from these groups
 
         def qr_callback(uuid, status, qrcode):
             if status == '0':
@@ -71,9 +71,13 @@ class EmotionBot(Bot):
         @self.register(msg_types=TEXT, except_self=False)
         def reply(msg):
             if msg.sender == self.self and '开启自动斗图' in msg.text:
-                self.at_reply_groups.append(msg.receiver)
+                self.at_reply_groups.add(msg.receiver)
                 logger.info('群聊<%s>已开启自动斗图' % msg.receiver.name)
-                return '@我发送文字可以自动斗图'
+                return '已开启，@我发送文字可以自动斗图'
+            elif msg.sender == self.self and '关闭自动斗图' in msg.text:
+                self.at_reply_groups.remove(msg.receiver)
+                logger.info('群聊<%s>已关闭自动斗图' % msg.receiver.name)
+                return '已关闭'
 
             keyword = None
             if msg.text[-4:] in ('.gif', '.jpg'):
