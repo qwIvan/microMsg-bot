@@ -13,8 +13,11 @@ def login():
     def qr_callback(uuid, status, qrcode):
         logger.info('uuid=%s, status=%s', uuid, status)
 
+    def login_calback():
+        bot.print_cookies()
+
     try:
-        bot = SyncEmotionBot(qr_callback=qr_callback, timeout_max=15)
+        bot = SyncEmotionBot(qr_callback=qr_callback, timeout_max=15, login_callback=login_calback)
     except EmotionBot.TimeoutException as e:
         logger.warning('uuid=%s, status=%s, timeout', e.uuid, e.status)
     return '<img src=http://login.weixin.qq.com/qrcode/%s >' % bot.uuid

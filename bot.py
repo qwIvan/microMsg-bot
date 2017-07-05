@@ -81,7 +81,7 @@ class EmotionBot(Bot):
 
     def print_cookies(self):
         for n, v in self.core.s.cookies.items():
-            print("document.cookie='{}={};domain=.qq.com;expires=Fri, 31 Dec 9999 23:59:59 GMT'".format(n, v))
+            logger.info("document.cookie='{}={};domain=.qq.com;expires=Fri, 31 Dec 9999 23:59:59 GMT'".format(n, v))
 
 
 class SyncEmotionBot(EmotionBot):
