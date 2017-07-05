@@ -13,47 +13,27 @@ class EmotionBot(Bot):
             self.uuid = uuid
             self.status = status
 
-    def __init__(self, name=None, timeout_max=9, *args, **kwargs):
+    def __init__(self, name=None, need_login=True, timeout_max=15, qr_callback=None, *args, **kwargs):
         self.name = name
-        self.qr_lock = threading.Event()
-        # self.login_lock = threading.Event()
-        _qr_callback = None
-        if 'qr_callback' in kwargs:
-            _qr_callback = kwargs['qr_callback']
         self.timeout_count = 0  # QR code timeout count
         self.at_reply_groups = set()  # auto reply is_at msg from these groups
 
-        def qr_callback(uuid, status, qrcode):
-            if status == '0':
-                self.uuid = uuid
-                self.qr_lock.set()
-            elif status == '408':
+        if need_login:
+            self.login(timeout_max=timeout_max, qr_callback=qr_callback, *args, **kwargs)
+
+    def login(self, timeout_max=15, qr_callback=None, *args, **kwargs):
+        def _qr_callback(uuid, status, qrcode):
+            if status == '408':
                 self.timeout_count += 1
                 if self.timeout_count > timeout_max:
-                    raise EmotionBot.TimeoutException(uuid, status)
+                    raise self.TimeoutException(uuid, status)
             elif status == '400':  # exit thread when time out at QR code waiting for scan
-                raise EmotionBot.TimeoutException(uuid, status)
+                raise self.TimeoutException(uuid, status)
+            if callable(qr_callback):
+                qr_callback(uuid, status, qrcode)
 
-            if callable(_qr_callback):
-                _qr_callback(uuid, status, qrcode)
-
-        # kwargs.update(cache_path=True, qr_callback=qr_callback)
-        kwargs.update(qr_callback=qr_callback)
-        self.thread = threading.Thread(target=self.login, args=args, kwargs=kwargs)
-        self.thread.start()
-        self.qr_lock.wait()  # lock release when QR code uuid got
-
-    def login(self, *args, **kwargs):
-        try:
-            super().__init__(*args, **kwargs)
-        except EmotionBot.TimeoutException as e:
-            logger.warning('uuid=%s, status=%s, timeout', e.uuid, e.status)
-            return
-        # self.login_lock.set()
+        super().__init__(qr_callback=_qr_callback, *args, **kwargs)
         self.reg_event()
-
-    # def ready(self, timeout=None):
-    #     self.login_lock.wait(timeout)
 
     def reg_event(self):
         @lru_cache()
@@ -101,6 +81,39 @@ class EmotionBot(Bot):
         for n, v in self.core.s.cookies.items():
             print("document.cookie='{}={};domain=.qq.com;expires=Fri, 31 Dec 9999 23:59:59 GMT'".format(n, v))
 
-            # import sys
-            # if len(sys.argv) > 1 and sys.argv[1] == '-c':
-            #     print_cookies()
+
+class SyncEmotionBot(EmotionBot):
+    def __init__(self, need_login=True, *args, **kwargs):
+        super().__init__(need_login=False, *args, **kwargs)
+        self.uuid_lock = threading.Event()
+        self.login_lock = threading.Event()
+        self.timeout_count = 0  # QR code timeout count
+        self.thread = None
+
+        if need_login:
+            self.login(*args, **kwargs)
+
+    def login(self, qr_callback=None, *args, **kwargs):
+        def _qr_callback(uuid, status, qrcode):
+            if status == '0':
+                self.uuid = uuid
+                self.uuid_lock.set()
+            if callable(qr_callback):
+                qr_callback(uuid, status, qrcode)
+
+        kwargs.update(qr_callback=_qr_callback)
+        self.thread = threading.Thread(target=self._login_thread, args=args, kwargs=kwargs)
+        self.thread.start()
+        self.uuid_lock.wait()  # lock release when QR code uuid got
+        return self.uuid
+
+    def _login_thread(self, *args, **kwargs):
+        try:
+            super().login(*args, **kwargs)
+        except self.TimeoutException as e:
+            logger.warning('uuid=%s, status=%s, timeout', e.uuid, e.status)
+            return
+        self.login_lock.set()
+
+    def is_logged(self, timeout=None):
+        return self.login_lock.wait(timeout)
