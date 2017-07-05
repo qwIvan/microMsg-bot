@@ -70,7 +70,9 @@ class EmotionBot(Bot):
                     imgs = meme.search(keyword)
                     searched[keyword] = imgs
                 if imgs:
-                    media_id = gif_media_id(*imgs.pop(0))
+                    img = imgs.pop(0)
+                    media_id = gif_media_id(*img)
+                    imgs.append(img)
                     msg.reply_image('.gif', media_id=media_id)
 
                     # @self.register(msg_types=FRIENDS)
