@@ -1,6 +1,7 @@
 import meme
 import re
 import threading
+import shelve
 from wxpy import *
 from logger import logger
 from functools import lru_cache
@@ -46,8 +47,6 @@ class EmotionBot(Bot):
                 tmp.close()
             return media_id
 
-        searched = {}
-
         @self.register(msg_types=TEXT, except_self=False)
         def reply(msg):
             if msg.sender == self.self and '开启自动斗图' in msg.text:
@@ -65,16 +64,19 @@ class EmotionBot(Bot):
             elif msg.is_at and msg.sender in self.at_reply_groups:
                 keyword = re.sub('@\S+', '', msg.text)
             if keyword:
+                searched = shelve.open('searched', writeback=True)
                 imgs = keyword in searched and searched[keyword]
                 if not imgs:
                     imgs = meme.search(keyword)
-                    logger.info('search %s, %d result%s', keyword, len(imgs), 's' if len(imgs) > 1 else '')
+                    logger.info('New keyword "%s", %d result%s', keyword, len(imgs), 's' if len(imgs) > 1 else '')
                     searched[keyword] = imgs
                 if imgs:
                     img = imgs.pop(0)
                     media_id = gif_media_id(*img)
                     imgs.append(img)
+                    logger.info('Received keyword "%s", reply image with media_id %s', keyword, media_id)
                     msg.reply_image('.gif', media_id=media_id)
+                searched.close()
 
                     # @self.register(msg_types=FRIENDS)
                     # def gdg_offical_group(msg):
