@@ -68,6 +68,7 @@ class EmotionBot(Bot):
                 imgs = keyword in searched and searched[keyword]
                 if not imgs:
                     imgs = meme.search(keyword)
+                    logger.info('search %s, %d result%s', keyword, len(imgs), 's' if len(imgs) > 1 else '')
                     searched[keyword] = imgs
                 if imgs:
                     img = imgs.pop(0)
