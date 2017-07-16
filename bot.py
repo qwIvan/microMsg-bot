@@ -64,23 +64,20 @@ class EmotionBot(Bot):
             elif msg.is_at and msg.sender in self.at_reply_groups:
                 keyword = re.sub('@\S+', '', msg.text)
             if keyword:
-                searched = shelve.open('searched', writeback=True)
-                imgs = keyword in searched and searched[keyword]
+                with shelve.open('searched') as searched:
+                    imgs = keyword in searched and searched[keyword]
                 if not imgs:
                     imgs = meme.search(keyword)
                     logger.info('New keyword "%s", %d result%s', keyword, len(imgs), 's' if len(imgs) > 1 else '')
-                    searched[keyword] = imgs
                 if imgs:
                     img = imgs.pop(0)
                     media_id = gif_media_id(*img)
                     imgs.append(img)
+                    with shelve.open('searched') as searched:
+                        searched[keyword] = imgs
                     logger.info('Received keyword "%s", reply image with media_id %s', keyword, media_id)
                     msg.reply_image('.gif', media_id=media_id)
                 searched.close()
-
-                    # @self.register(msg_types=FRIENDS)
-                    # def gdg_offical_group(msg):
-                    #     msg.card.accept()
 
     def print_cookies(self):
         for n, v in self.core.s.cookies.items():
