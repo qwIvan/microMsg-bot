@@ -5,9 +5,9 @@ from functools import lru_cache
 
 @lru_cache()
 def search(keyword):
-    resp = requests.get('http://www.doutula.com/search', {'keyword': keyword})
+    resp = requests.get('https://www.doutula.com/search', {'keyword': keyword})
     soup = BeautifulSoup(resp.text, 'lxml')
-    return [(i.get('data-original'), i.get('data-backup')[:-4]) for i in soup.select('img[data-original]') if i.get('class') != ['gif']]
+    return [('http:' + i.get('data-original'), 'http:' + i.get('data-backup')[:-4]) for i in soup.select('img[data-original]') if i.get('class') != ['gif']]
 
 
 def download_gif(f, *url):
