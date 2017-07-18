@@ -2,7 +2,7 @@
 from logger import logger
 from flask import Flask
 from bot import EmotionBot, SyncEmotionBot
-from flask_socketio import SocketIO, emit
+from flask_socketio import SocketIO, send
 
 app = Flask(__name__)
 socketio = SocketIO(app)
@@ -29,8 +29,7 @@ def login(msg):
 
     def qr_callback(uuid, status, qrcode):
         logger.info('%s %s', uuid, status)
-        if status == '0':
-            emit('qr', uuid)
+        send((uuid, status))
 
     try:
         bot = EmotionBot(qr_callback=qr_callback)
