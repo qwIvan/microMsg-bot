@@ -20,6 +20,11 @@
                 document.getElementById('qr').setAttribute('src', '');
                 document.getElementById('tips').innerText = '机器人已成功登录';
                 break;
+            case 'timeout':
+                document.getElementById('qr').setAttribute('src', '');
+                document.getElementById('tips').innerText = '二维码过期，等待刷新';
+                socket.emit('login');
+                break;
         }
     });
     socket.emit('login');

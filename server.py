@@ -31,12 +31,14 @@ def login():
 
         def qr_callback(uuid, status, qrcode):
             logger.info('%s %s', uuid, status)
-            socketio.emit('qr', (uuid, status), room=sid)
+            if status != '408':
+                socketio.emit('qr', (uuid, status), room=sid)
 
         try:
-            bot = EmotionBot(qr_callback=qr_callback)
+            bot = EmotionBot(qr_callback=qr_callback, cache_path=sid)
         except EmotionBot.TimeoutException as e:
             logger.warning('uuid=%s, status=%s, timeout', e.uuid, e.status)
+            socketio.emit('qr', (e.uuid, 'timeout'), room=sid)
 
     socketio.start_background_task(background_thread, sid=request.sid)
 
