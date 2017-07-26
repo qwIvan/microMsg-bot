@@ -1,8 +1,8 @@
 #!/bin/env python3
 from logger import logger
-from flask import Flask
+from flask import Flask, request
 from bot import EmotionBot, SyncEmotionBot
-from flask_socketio import SocketIO, send
+from flask_socketio import SocketIO, emit
 
 app = Flask(__name__)
 socketio = SocketIO(app)
@@ -24,19 +24,21 @@ def login():
 
 
 @socketio.on('login')
-def login(msg):
-    logger.info(msg)
+def login():
 
-    def qr_callback(uuid, status, qrcode):
-        logger.info('%s %s', uuid, status)
-        send((uuid, status))
+    def background_thread(sid):
 
-    try:
-        bot = EmotionBot(qr_callback=qr_callback)
-    except EmotionBot.TimeoutException as e:
-        logger.warning('uuid=%s, status=%s, timeout', e.uuid, e.status)
+        def qr_callback(uuid, status, qrcode):
+            logger.info('%s %s', uuid, status)
+            socketio.emit('qr', (uuid, status), room=sid)
+
+        try:
+            bot = EmotionBot(qr_callback=qr_callback)
+        except EmotionBot.TimeoutException as e:
+            logger.warning('uuid=%s, status=%s, timeout', e.uuid, e.status)
+
+    socketio.start_background_task(background_thread, sid=request.sid)
 
 
 if __name__ == '__main__':
-    # app.run()
     socketio.run(app)

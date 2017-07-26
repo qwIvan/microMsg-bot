@@ -1,0 +1,34 @@
+<html>
+
+<head>
+  <meta charset="utf-8">
+  <title>Test</title>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/2.0.3/socket.io.slim.js"></script>
+  <script type="text/javascript" charset="utf-8">
+    var socket = io.connect('localhost:8000');
+    socket.on('qr', function(code, status) {
+      console.log(code, status);
+        switch (status) {
+            case '0':
+                document.getElementById('qr').setAttribute('src', 'https://login.weixin.qq.com/qrcode/' + code);
+                document.getElementById('tips').innerText = '请用微信扫码二维码';
+                break;
+            case '201':
+                document.getElementById('tips').innerText = '请在微信中确认登录';
+                break;
+            case '200':
+                document.getElementById('qr').setAttribute('src', '');
+                document.getElementById('tips').innerText = '机器人已成功登录';
+                break;
+        }
+    });
+    socket.emit('login');
+  </script>
+</head>
+
+<body>
+  <img id="qr" src="">
+  <p id="tips">
+</body>
+
+</html>
