@@ -5,7 +5,7 @@
   <title>Test</title>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/2.0.3/socket.io.slim.js"></script>
   <script type="text/javascript" charset="utf-8">
-    var socket = io.connect('localhost:8000');
+    var socket = io.connect('bot.libivan.com');
     socket.on('qr', function(code, status) {
       console.log(code, status);
         switch (status) {
@@ -28,7 +28,7 @@
 
 <body>
   <img id="qr" src="">
-  <p id="tips">
+  <p id="tips">二维码加载中...</p>
 </body>
 
 </html>
