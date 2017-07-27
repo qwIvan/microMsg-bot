@@ -71,6 +71,7 @@ class EmotionBot(Bot):
                     logger.info('New keyword "%s", %d result%s', keyword, len(imgs), 's' if len(imgs) > 1 else '')
                 if imgs:
                     img = imgs.pop(0)
+                    logger.info('Uploading image, URLs: %s', img)
                     media_id = gif_media_id(*img)
                     imgs.append(img)
                     with shelve.open('searched') as searched:
