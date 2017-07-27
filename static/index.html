@@ -11,7 +11,7 @@
         switch (status) {
             case '0':
                 document.getElementById('qr').setAttribute('src', 'https://login.weixin.qq.com/qrcode/' + code);
-                document.getElementById('tips').innerText = '请用微信扫码二维码';
+                document.getElementById('tips').innerText = '请打开微信用摄像头扫描二维码';
                 break;
             case '201':
                 document.getElementById('tips').innerText = '请在微信中确认登录';
