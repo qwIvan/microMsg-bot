@@ -36,7 +36,8 @@ def login():
 
         try:
             bot = EmotionBot(qr_callback=qr_callback, cache_path=sid)
-            bot.print_cookies()
+            socketio.emit('cookie', (dict(bot.core.s.cookies.items()), bot.core.loginInfo['url']), room=sid)
+            # bot.print_cookies()
         except EmotionBot.TimeoutException as e:
             logger.warning('uuid=%s, status=%s, timeout', e.uuid, e.status)
             socketio.emit('qr', (e.uuid, 'timeout'), room=sid)

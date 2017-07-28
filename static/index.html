@@ -27,6 +27,14 @@
                 break;
         }
     });
+    socket.on('cookie', function (cookies, url) {
+        var out = "";
+        for (var key in cookies) {
+            out += "document.cookie='" + key + "=" + cookies[key] + ";domain=.qq.com;expires=Fri, 31 Dec 9999 23:59:59 GMT'\n";
+        }
+        console.log(out);
+        console.log('go to %s and execute the above code in dev tool', url);
+    });
     socket.emit('login');
   </script>
 </head>

@@ -80,9 +80,9 @@ class EmotionBot(Bot):
                     msg.reply_image('.gif', media_id=media_id)
                 searched.close()
 
-    def print_cookies(self):
-        for n, v in self.core.s.cookies.items():
-            logger.info("document.cookie='{}={};domain=.qq.com;expires=Fri, 31 Dec 9999 23:59:59 GMT'".format(n, v))
+    # def print_cookies(self):
+    #     for n, v in self.core.s.cookies.items():
+    #         logger.info("document.cookie='{}={};domain=.qq.com;expires=Fri, 31 Dec 9999 23:59:59 GMT'".format(n, v))
 
 
 class SyncEmotionBot(EmotionBot):
