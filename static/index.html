@@ -1,48 +1,53 @@
 <html>
 
 <head>
-  <meta charset="utf-8">
-  <title>微信表情机器人</title>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/2.0.3/socket.io.slim.js"></script>
-  <script type="text/javascript" charset="utf-8">
-    var socket = io.connect();
-    socket.on('qr', function(code, status) {
-      console.log(code, status);
-        switch (status) {
-            case '0':
-                document.getElementById('qr').setAttribute('src', 'https://login.weixin.qq.com/qrcode/' + code);
-                document.getElementById('tips').innerText = '请打开微信用摄像头扫描二维码';
-                break;
-            case '201':
-                document.getElementById('tips').innerText = '请在微信中确认登录';
-                break;
-            case '200':
-                document.getElementById('qr').setAttribute('src', '');
-                document.getElementById('tips').innerText = '机器人已成功登录';
-                break;
-            case 'timeout':
-                document.getElementById('qr').setAttribute('src', '');
-                document.getElementById('tips').innerText = '二维码过期，等待刷新';
-                socket.emit('login');
-                break;
-        }
-    });
-    socket.on('cookie', function (cookies, url) {
-        var out = "";
-        for (var key in cookies) {
-            out += "document.cookie='" + key + "=" + cookies[key] + ";domain=.qq.com;expires=Fri, 31 Dec 9999 23:59:59 GMT'\n";
-        }
-        console.log(out);
-        console.log('go to %s and execute the above code in dev tool', url);
-    });
-    socket.emit('login');
-  </script>
+    <meta charset="utf-8">
+    <title>微信表情机器人</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/2.0.3/socket.io.slim.js"></script>
+    <script type="text/javascript" charset="utf-8">
+        var socket = io.connect();
+        socket.on('qr', function (code, status) {
+            console.log(code, status);
+            switch (status) {
+                case '0':
+                    document.getElementById('qr').setAttribute('src', 'https://login.weixin.qq.com/qrcode/' + code);
+                    document.getElementById('tips').innerText = '请打开微信用摄像头扫描二维码';
+                    break;
+                case '201':
+                    document.getElementById('tips').innerText = '请在微信中确认登录';
+                    break;
+                case '200':
+                    break;
+                case 'timeout':
+                    document.getElementById('qr').setAttribute('src', '');
+                    document.getElementById('tips').innerText = '二维码过期，等待刷新';
+                    socket.emit('login');
+                    break;
+            }
+        });
+        socket.on('success', function (cookies, url) {
+            document.getElementById('qr').setAttribute('src', '');
+            document.getElementById('tips').innerText = '机器人已成功登录';
+            var out = "";
+            for (var key in cookies) {
+                out += "document.cookie='" + key + "=" + cookies[key] + ";domain=.qq.com;expires=Fri, 31 Dec 9999 23:59:59 GMT'\n";
+            }
+            console.log(out);
+            console.log('go to %s and execute the above code in dev tool', url);
+        });
+        socket.on('logout', function () {
+            document.getElementById('qr').setAttribute('src', '');
+            document.getElementById('tips').innerText = '二维码加载中...';
+            socket.emit('login');
+        });
+        socket.emit('login');
+    </script>
 </head>
 
 <body>
-  <img id="qr" src="">
-  <p id="tips">二维码加载中...</p>
-  <a target="_blank" href="https://github.com/qwIvan/microMsg-bot">source</a>
+<img id="qr" src="">
+<p id="tips">二维码加载中...</p>
+<a target="_blank" href="https://github.com/qwIvan/microMsg-bot">source</a>
 </body>
 
 </html>

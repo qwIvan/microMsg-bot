@@ -73,16 +73,13 @@ class EmotionBot(Bot):
                     img = imgs.pop(0)
                     logger.info('Uploading image, URLs: %s', img)
                     media_id = gif_media_id(*img)
+                    logger.info('Uploading complete, %s media_id is %s', img, media_id)
                     imgs.append(img)
                     with shelve.open('searched') as searched:
                         searched[keyword] = imgs
                     logger.info('Received keyword "%s", reply image with media_id %s', keyword, media_id)
                     msg.reply_image('.gif', media_id=media_id)
                 searched.close()
-
-    # def print_cookies(self):
-    #     for n, v in self.core.s.cookies.items():
-    #         logger.info("document.cookie='{}={};domain=.qq.com;expires=Fri, 31 Dec 9999 23:59:59 GMT'".format(n, v))
 
 
 class SyncEmotionBot(EmotionBot):
