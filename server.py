@@ -47,9 +47,10 @@ def login():
         def logout_callback():
             with shelve.open('bot_status') as bot_status:
                 bot_status[cache_path] = False
-                if cache_path in bots:
-                    del bots[cache_path]
-                socketio.emit('logout', room=sid)
+            if cache_path in bots:
+                logger.info('%s logged out!', bots[cache_path].self.name)
+                del bots[cache_path]
+            socketio.emit('logout', room=sid)
 
         def login_callback():
             if hasattr(bots.get(cache_path, None), 'logout'):

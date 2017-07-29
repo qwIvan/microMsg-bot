@@ -37,8 +37,7 @@
         });
         socket.on('logout', function () {
             document.getElementById('qr').setAttribute('src', '');
-            document.getElementById('tips').innerText = '二维码加载中...';
-            socket.emit('login');
+            document.getElementById('tips').innerText = '已退出，刷新页面重新登录';
         });
         socket.emit('login');
     </script>
