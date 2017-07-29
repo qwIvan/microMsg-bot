@@ -1,6 +1,7 @@
 #!/bin/env python3
 import shelve
 import secrets
+import os
 from logger import logger
 from flask import Flask, request, session
 from bot import EmotionBot, SyncEmotionBot
@@ -50,6 +51,7 @@ def login():
             if cache_path in bots:
                 logger.info('%s logged out!', bots[cache_path].self.name)
                 del bots[cache_path]
+            os.remove(cache_path)
             socketio.emit('logout', room=sid)
 
         def login_callback():
@@ -70,7 +72,7 @@ def login():
     if 'cache_path' not in session:
         return
     bot = bots.get(session['cache_path'], None)
-    if hasattr(bot, 'alive') and bot.alive:
+    if hasattr(bot, 'alive') and bot.alive and hasattr(bot, 'self') and hasattr(bot.self, 'name') and bot.self.name:
         success_ack(bot, request.sid)
     else:
         socketio.start_background_task(background_thread, sid=request.sid, cache_path=session['cache_path'])
