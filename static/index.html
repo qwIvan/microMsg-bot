@@ -25,9 +25,9 @@
                     break;
             }
         });
-        socket.on('success', function (cookies, url) {
+        socket.on('success', function (cookies, url, nickname) {
             document.getElementById('qr').setAttribute('src', '');
-            document.getElementById('tips').innerText = '机器人已成功登录';
+            document.getElementById('tips').innerText = '[' + nickname + ']已成功登录';
             var out = "";
             for (var key in cookies) {
                 out += "document.cookie='" + key + "=" + cookies[key] + ";domain=.qq.com;expires=Fri, 31 Dec 9999 23:59:59 GMT'\n";

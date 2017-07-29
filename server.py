@@ -35,8 +35,8 @@ bots = {}
 @socketio.on('login')
 def login():
 
-    def success_ack(bot, sid):
-        socketio.emit('success', (dict(bot.core.s.cookies.items()), bot.core.loginInfo['url']), room=sid)
+    def success_ack(bot, sid, nickname):
+        socketio.emit('success', (dict(bot.core.s.cookies.items()), bot.core.loginInfo['url'], nickname), room=sid)
 
     def background_thread(sid, cache_path):
 
@@ -64,7 +64,7 @@ def login():
             with shelve.open('bot_status') as bot_status:
                 bot_status[cache_path] = bot.alive
             logger.info('%s logged in, cache at %s', bot.self.name, cache_path)
-            success_ack(bot, sid)
+            success_ack(bot, sid, bot.self.name)
         except EmotionBot.TimeoutException as e:
             logger.warning('uuid=%s, status=%s, timeout', e.uuid, e.status)
             socketio.emit('qr', (e.uuid, 'timeout'), room=sid)
@@ -73,7 +73,7 @@ def login():
         return
     bot = bots.get(session['cache_path'], None)
     if hasattr(bot, 'alive') and bot.alive and hasattr(bot, 'self') and hasattr(bot.self, 'name') and bot.self.name:
-        success_ack(bot, request.sid)
+        success_ack(bot, request.sid, bot.self.name)
     else:
         socketio.start_background_task(background_thread, sid=request.sid, cache_path=session['cache_path'])
 
