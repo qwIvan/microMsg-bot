@@ -32,7 +32,6 @@ def image_url(keyword):
     with keyword_dict_locks:
         kw_lock = keyword_locks.get(keyword, None)
         if not kw_lock:
-            print('test!')
             kw_lock = Lock()
             keyword_locks[keyword] = kw_lock
 
