@@ -6,6 +6,7 @@ from logger import logger
 from flask import Flask, request, session
 from bot import EmotionBot, SyncEmotionBot
 from flask_socketio import SocketIO, emit, join_room
+from threading import Lock
 
 app = Flask(__name__)
 app.secret_key = 'test'
@@ -30,6 +31,7 @@ def login():
 #     return '<img src=http://login.weixin.qq.com/qrcode/%s >' % bot.uuid
 
 bots = {}
+bot_status_lock = Lock()
 
 
 @socketio.on('login')
@@ -46,8 +48,9 @@ def login():
                 socketio.emit('qr', (uuid, status), room=sessionID)
 
         def logout_callback():
-            with shelve.open('bot_status') as bot_status:
-                bot_status[sessionID] = False
+            with bot_status_lock:
+                with shelve.open('bot_status') as bot_status:
+                    bot_status[sessionID] = False
             if sessionID in bots:
                 logger.info('%s logged out!', bots[sessionID].self.name)
                 del bots[sessionID]
@@ -62,8 +65,9 @@ def login():
             bot = EmotionBot(qr_callback=qr_callback, cache_path=sessionID, logout_callback=logout_callback, login_callback=login_callback)
             # socketio.server.enter_room(room=cache_path, sid=sid)
             bots[sessionID] = bot
-            with shelve.open('bot_status') as bot_status:
-                bot_status[sessionID] = bot.alive
+            with bot_status_lock:
+                with shelve.open('bot_status') as bot_status:
+                    bot_status[sessionID] = bot.alive
             logger.info('%s logged in, cache at %s', bot.self.name, sessionID)
             success_ack(bot, sessionID, bot.self.name)
         except EmotionBot.TimeoutException as e:

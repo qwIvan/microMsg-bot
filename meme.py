@@ -1,6 +1,9 @@
 import requests
+import shelve
 from bs4 import BeautifulSoup
 from functools import lru_cache
+from threading import Lock
+from logger import logger
 
 
 @lru_cache()
@@ -18,3 +21,40 @@ def download_gif(f, *url):
             f.write(resp.content)
             f.flush()
             return
+
+
+keyword_dict_locks = Lock()
+keyword_locks = {}
+searched_lock = Lock()
+
+
+def image_url(keyword):
+    with keyword_dict_locks:
+        kw_lock = keyword_locks.get(keyword, None)
+        if not kw_lock:
+            print('test!')
+            kw_lock = Lock()
+            keyword_locks[keyword] = kw_lock
+
+    with kw_lock:
+        img = None
+        with searched_lock:
+            with shelve.open('searched') as searched:
+                imgs = searched.get(keyword, None)
+                if imgs:
+                    img = imgs.pop(0)
+                    imgs.append(img)
+                    searched[keyword] = imgs
+        if img:
+            return img
+
+        if not img:
+            imgs = search(keyword)
+            logger.info('New keyword "%s", %d result%s', keyword, len(imgs), 's' if len(imgs) > 1 else '')
+        if imgs:
+            img = imgs.pop(0)
+            imgs.append(img)
+            with searched_lock:
+                with shelve.open('searched') as searched:
+                    searched[keyword] = imgs
+            return img

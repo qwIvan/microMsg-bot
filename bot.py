@@ -1,7 +1,6 @@
 import meme
 import re
 import threading
-import shelve
 from wxpy import *
 from logger import logger
 from functools import lru_cache
@@ -64,22 +63,12 @@ class EmotionBot(Bot):
             elif msg.is_at and msg.sender in self.at_reply_groups:
                 keyword = re.sub('@\S+', '', msg.text)
             if keyword:
-                with shelve.open('searched') as searched:
-                    imgs = keyword in searched and searched[keyword]
-                if not imgs:
-                    imgs = meme.search(keyword)
-                    logger.info('New keyword "%s", %d result%s', keyword, len(imgs), 's' if len(imgs) > 1 else '')
-                if imgs:
-                    img = imgs.pop(0)
+                img = meme.image_url(keyword)
+                if img:
                     logger.info('Uploading image, URLs: %s', img)
                     media_id = gif_media_id(*img)
-                    logger.info('Uploading complete, %s media_id is %s', img, media_id)
-                    imgs.append(img)
-                    with shelve.open('searched') as searched:
-                        searched[keyword] = imgs
                     logger.info('Received keyword "%s", reply image with media_id %s', keyword, media_id)
                     msg.reply_image('.gif', media_id=media_id)
-                searched.close()
 
 
 class SyncEmotionBot(EmotionBot):
