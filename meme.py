@@ -3,7 +3,7 @@ import shelve
 from bs4 import BeautifulSoup
 from functools import lru_cache
 from threading import Lock
-from logger import logger
+from .logger import logger
 
 
 @lru_cache()

@@ -2,11 +2,11 @@
 import shelve
 import secrets
 import os
-from logger import logger
 from flask import Flask, request, session
-from bot import EmotionBot, SyncEmotionBot
 from flask_socketio import SocketIO, emit, join_room
 from threading import Lock
+from .bot import EmotionBot, SyncEmotionBot
+from .logger import logger
 
 app = Flask(__name__)
 app.secret_key = 'test'

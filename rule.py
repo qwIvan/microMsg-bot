@@ -1,9 +1,9 @@
-import meme
 import re
 from wxpy import *
-from logger import logger
 from functools import lru_cache
 from tempfile import NamedTemporaryFile
+from . import meme
+from .logger import logger
 
 
 def reg_event(bot):

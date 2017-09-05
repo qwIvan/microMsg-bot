@@ -1,7 +1,7 @@
 import threading
 from wxpy import *
-from rule import reg_event
-from logger import logger
+from .rule import reg_event
+from .logger import logger
 
 
 class EmotionBot(Bot):
