@@ -50,6 +50,7 @@ def image_url(keyword):
         if not img:
             imgs = search(keyword)
             logger.info('New keyword "%s", %d result%s', keyword, len(imgs), 's' if len(imgs) > 1 else '')
+            imgs = imgs[:10]
         if imgs:
             img = imgs.pop(0)
             imgs.append(img)
