@@ -1,6 +1,6 @@
 FROM python:alpine
 RUN apk update && apk add gcc libxml2-dev libxslt-dev libc-dev
-RUN pip install wxpy bs4 lxml flask gunicorn==18.0 flask_socketio eventlet
+RUN pip install wxpy bs4 lxml flask gunicorn==18.0 flask_socketio eventlet js2py
 ADD . /micro_msg_bot
 WORKDIR /data
 EXPOSE 80
