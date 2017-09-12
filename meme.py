@@ -42,6 +42,7 @@ def search(keyword):
         params['jschl_answer'] = answer
         time.sleep(4)
         session.get('https://www.doutula.com' + form['action'], params=params, allow_redirects=False)
+        logger.info('www.doutula.com new session %s', session.cookies.get_dict())
         resp = session.get('https://www.doutula.com/search', params={'keyword': keyword})
 
     soup = BeautifulSoup(resp.text, 'lxml')
