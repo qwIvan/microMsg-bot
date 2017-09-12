@@ -1,14 +1,49 @@
 import requests
 import shelve
+import js2py
+import time
 from bs4 import BeautifulSoup
 from functools import lru_cache
 from threading import Lock
 from .logger import logger
 
+user_agent = 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/60.0.3112.101 Safari/537.36'
+session = requests.Session()
+session.headers['user-agent'] = user_agent
+
+
+def jschl(tag):
+    snippet, obj = '', None
+    for line in tag.splitlines():
+        if 's,t,o,p,b,r,e,a,k,i,n,g' in line and ' ' in line:
+            define = line.rsplit(' ', maxsplit=1)[-1]
+            if '=' in define and define.endswith(';'):
+                obj = define.split('=')[0]
+                snippet += define
+        if 'submit()' in line:
+            break
+        if obj:
+            for seg in line.split(';'):
+                if seg.startswith(obj) and '=' in seg:
+                    snippet += seg + ';'
+    return js2py.eval_js(snippet) + len('www.doutula.com')
+
 
 @lru_cache()
 def search(keyword):
-    resp = requests.get('http://www.doutula.com/search', {'keyword': keyword})
+    resp = session.get('https://www.doutula.com/search', params={'keyword': keyword})
+
+    if resp.status_code != 200:
+        soup = BeautifulSoup(resp.text, 'lxml')
+        tag = soup.select_one('script').text
+        answer = jschl(tag)
+        form = soup.select_one('form')
+        params = dict([(i['name'], i.get('value', None)) for i in form.select('input')])
+        params['jschl_answer'] = answer
+        time.sleep(4)
+        session.get('https://www.doutula.com' + form['action'], params=params, allow_redirects=False)
+        resp = session.get('https://www.doutula.com/search', params={'keyword': keyword})
+
     soup = BeautifulSoup(resp.text, 'lxml')
     result = ((i.get('data-original'), i.get('data-backup')[:-4]) for i in soup.select('img[data-original]') if i.get('class') != ['gif'])
     return [[url if not url.startswith('//') else 'http:' + url for url in imgs] for imgs in result]
