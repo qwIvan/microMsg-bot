@@ -9,7 +9,7 @@ from .bot import EmotionBot, SyncEmotionBot
 from .logger import logger
 
 app = Flask(__name__)
-app.secret_key = 'test'
+app.secret_key = os.environ['KEY']
 socketio = SocketIO(app)
 
 
@@ -34,6 +34,19 @@ bots = {}
 bot_status_lock = Lock()
 
 
+def get_logout_callback_by_session_id(sessionID):
+    def logout_callback():
+        with bot_status_lock:
+            with shelve.open('bot_status') as bot_status:
+                bot_status[sessionID] = False
+        if sessionID in bots:
+            logger.info('%s logged out!', bots[sessionID].self.name)
+            del bots[sessionID]
+        os.remove(sessionID)
+        socketio.emit('logout', room=sessionID)
+    return logout_callback
+
+
 @socketio.on('login')
 def login():
 
@@ -47,24 +60,14 @@ def login():
             if status != '408':
                 socketio.emit('qr', (uuid, status), room=sessionID)
 
-        def logout_callback():
-            with bot_status_lock:
-                with shelve.open('bot_status') as bot_status:
-                    bot_status[sessionID] = False
-            if sessionID in bots:
-                logger.info('%s logged out!', bots[sessionID].self.name)
-                del bots[sessionID]
-            os.remove(sessionID)
-            socketio.emit('logout', room=sessionID)
-
         def login_callback():
             if hasattr(bots.get(sessionID, None), 'logout'):
                 bots[sessionID].logout()
 
         try:
-            bot = EmotionBot(qr_callback=qr_callback, cache_path=sessionID, logout_callback=logout_callback, login_callback=login_callback)
+            bot = EmotionBot(qr_callback=qr_callback, cache_path=sessionID, logout_callback=get_logout_callback_by_session_id(sessionID), login_callback=login_callback)
             # socketio.server.enter_room(room=cache_path, sid=sid)
-            bots[sessionID] = bot
+            bots[sessionID] = bot  # TODO 线程安全问题，用户有可能在此前已经logout
             with bot_status_lock:
                 with shelve.open('bot_status') as bot_status:
                     bot_status[sessionID] = bot.alive
@@ -107,6 +110,15 @@ def suffix_reply(flag):
         logger.info('%s: set suffix_reply to %s' % (bot.self.name, flag))
         emit('suffix_reply', flag)
         bot.self_msg('已%s后缀发表情' % ('开启' if flag else '关闭'))
+
+
+with shelve.open('bot_status') as bot_status:
+    for sessionID, alive in bot_status.items():
+        if alive:
+            bot = EmotionBot(timeout_max=1, cache_path=sessionID, qr_callback=None, login_callback=None, logout_callback=get_logout_callback_by_session_id(sessionID))
+            bots[sessionID] = bot  # TODO 线程安全问题，用户有可能在此前已经logout
+            bot_status[sessionID] = bot.alive
+            logger.info('%s logged back in, cache at %s', bot.self.name, sessionID)
 
 
 if __name__ == '__main__':
