@@ -51,6 +51,7 @@ def get_logout_callback_by_session_id(sessionID):
 def login():
 
     def success_ack(bot, sessionID, nickname):
+        socketio.emit('setting', bot.setting.__dict__, room=sessionID)
         socketio.emit('success', (dict(bot.core.s.cookies.items()), bot.core.loginInfo['url'], nickname), room=sessionID)
 
     def background_thread(sid, sessionID):
@@ -94,9 +95,9 @@ def at_reply(flag):
         return
     bot = bots.get(session.get('sessionID', None), None)
     if bot:
-        bot.at_reply_enable = flag
+        bot.setting.at_reply = flag
         logger.info('%s: set at_reply to %s' % (bot.self.name, flag))
-        emit('at_reply', flag)
+        emit('setting', bot.setting.__dict__)
         bot.self_msg('已%s被@发表情' % ('开启' if flag else '关闭'))
 
 
@@ -106,9 +107,9 @@ def suffix_reply(flag):
         return
     bot = bots.get(session.get('sessionID', None), None)
     if bot:
-        bot.suffix_reply_enable = flag
+        bot.setting.suffix_reply = flag
         logger.info('%s: set suffix_reply to %s' % (bot.self.name, flag))
-        emit('suffix_reply', flag)
+        emit('setting', bot.setting.__dict__)
         bot.self_msg('已%s后缀发表情' % ('开启' if flag else '关闭'))
 
 

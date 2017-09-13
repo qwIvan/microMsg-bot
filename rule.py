@@ -7,11 +7,13 @@ from . import meme
 from .logger import logger
 
 
+class BotSetting:
+    suffix_reply = True
+    at_reply = False
+    # TODO blacklist or white list
+
+
 def reg_event(bot):
-    # bot.at_reply_groups = set()  # TODO
-    # bot.at_reply_blacklist = True  # blacklist (default) or white list
-    bot.suffix_reply_enable = True
-    bot.at_reply_enable = False
 
     @lru_cache()
     def gif_media_id(*url):
@@ -26,9 +28,9 @@ def reg_event(bot):
     @bot.register(msg_types=TEXT, except_self=False)
     def reply(msg):
         keyword = None
-        if bot.suffix_reply_enable and msg.text[-4:] in ('.gif', '.jpg'):
+        if bot.setting.suffix_reply and msg.text[-4:] in ('.gif', '.jpg'):
             keyword = msg.text[:-4]
-        elif bot.at_reply_enable and msg.is_at and isinstance(msg.sender, Group):
+        elif bot.setting.at_reply and msg.is_at and isinstance(msg.sender, Group):
             keyword = re.sub('@%s' % msg.sender.self.display_name, '', msg.text, 1).strip()
             print(msg.sender.self.display_name)
         if keyword:

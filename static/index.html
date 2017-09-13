@@ -41,11 +41,16 @@
             document.getElementById('tips').innerText = '已退出，刷新页面重新登录';
             document.getElementById('panel').style.display = 'none';
         });
-        socket.on('suffix_reply', function (value) {
-            document.getElementById('suffix_reply_label').innerText = value? '[已开启]' : '[已关闭]';
-        });
-        socket.on('at_reply', function (value) {
-            document.getElementById('at_reply_label').innerText = value? '[已开启]' : '[已关闭]';
+        socket.on('setting', function (setting) {
+            console.log(setting);
+            if (setting['suffix_reply'] !== undefined) {
+                document.getElementById('suffix_reply').checked = setting['suffix_reply'];
+                document.getElementById('suffix_reply_label').innerText = setting['suffix_reply'] ? '[已开启]' : '[已关闭]';
+            }
+            if (setting['at_reply'] !== undefined) {
+                document.getElementById('at_reply').checked = setting['at_reply'];
+                document.getElementById('at_reply_label').innerText = setting['at_reply'] ? '[已开启]' : '[已关闭]';
+            }
         });
         socket.emit('login');
     </script>

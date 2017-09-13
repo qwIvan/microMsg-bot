@@ -1,7 +1,11 @@
 import threading
+import shelve
 from wxpy import *
-from .rule import reg_event
+from threading import Lock
+from .rule import reg_event, BotSetting
 from .logger import logger
+
+settings_lock = Lock()
 
 
 class EmotionBot(Bot):
@@ -13,7 +17,7 @@ class EmotionBot(Bot):
     def __init__(self, name=None, need_login=True, timeout_max=15, qr_callback=None, *args, **kwargs):
         self.name = name
         self.timeout_count = 0  # QR code timeout count
-
+        self.setting = None
         if need_login:
             self.login(timeout_max=timeout_max, qr_callback=qr_callback, *args, **kwargs)
 
@@ -29,6 +33,20 @@ class EmotionBot(Bot):
                 qr_callback(uuid, status, qrcode)
 
         super().__init__(qr_callback=_qr_callback, *args, **kwargs)
+
+        uin = str(self.self.uin)
+        with settings_lock:
+            with shelve.open('settings') as settings:
+                self.setting = settings.get(uin, None) or BotSetting()
+
+        def save_setting(setting, name, value):
+            setting.__dict__[name] = value
+            with settings_lock:
+                with shelve.open('settings') as settings:
+                    settings[uin] = self.setting
+                    logger.info('%s updated setting', self.self.name)
+        BotSetting.__setattr__ = save_setting
+
         reg_event(self)
 
     def self_msg(self, msg):
