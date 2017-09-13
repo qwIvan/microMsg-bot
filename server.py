@@ -112,14 +112,27 @@ def suffix_reply(flag):
         bot.self_msg('已%s后缀发表情' % ('开启' if flag else '关闭'))
 
 
+class SessionDeadException(Exception):
+    pass
+
+
+def qr_callback(uuid, status, qrcode):
+    if status != 200:
+        raise SessionDeadException
+
+
 with shelve.open('bot_status') as bot_status:
     for sessionID, alive in bot_status.items():
         if alive:
-            bot = EmotionBot(timeout_max=1, cache_path=sessionID, qr_callback=None, login_callback=None, logout_callback=get_logout_callback_by_session_id(sessionID))
+            logger.info('try to log back in %s', sessionID)
+            try:
+                bot = EmotionBot(timeout_max=0, cache_path=sessionID, qr_callback=qr_callback, logout_callback=get_logout_callback_by_session_id(sessionID))
+            except (EmotionBot.TimeoutException, SessionDeadException):
+                logger.info('%s log back in failed', sessionID)
+                continue
             bots[sessionID] = bot  # TODO 线程安全问题，用户有可能在此前已经logout
             bot_status[sessionID] = bot.alive
             logger.info('%s logged back in, cache at %s', bot.self.name, sessionID)
-
 
 if __name__ == '__main__':
     socketio.run(app)
