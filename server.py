@@ -5,7 +5,7 @@ import os
 from flask import Flask, request, session
 from flask_socketio import SocketIO, emit, join_room
 from threading import Lock
-from .bot import EmotionBot, SyncEmotionBot
+from .bot import EmotionBot
 from .logger import logger
 
 app = Flask(__name__)
