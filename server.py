@@ -70,6 +70,7 @@ def login():
                     bot_status[sessionID] = bot.alive
             logger.info('%s logged in, cache at %s', bot.self.name, sessionID)
             success_ack(bot, sessionID, bot.self.name)
+            bot.self_msg('已成功登录\n<a href="http://test.com">查看教程</a>')
         except EmotionBot.TimeoutException as e:
             logger.warning('uuid=%s, status=%s, timeout', e.uuid, e.status)
             socketio.emit('qr', (e.uuid, 'timeout'), room=sessionID)
@@ -82,6 +83,30 @@ def login():
         success_ack(bot, request.sid, bot.self.name)
     else:
         socketio.start_background_task(background_thread, sid=request.sid, sessionID=session['sessionID'])
+
+
+@socketio.on('at_reply')
+def at_reply(flag):
+    if not isinstance(flag, bool):
+        return
+    bot = bots.get(session.get('sessionID', None), None)
+    if bot:
+        bot.at_reply_enable = flag
+        logger.info('%s: set at_reply to %s' % (bot.self.name, flag))
+        emit('at_reply', flag)
+        bot.self_msg('已%s被@发表情' % ('开启' if flag else '关闭'))
+
+
+@socketio.on('suffix_reply')
+def suffix_reply(flag):
+    if not isinstance(flag, bool):
+        return
+    bot = bots.get(session.get('sessionID', None), None)
+    if bot:
+        bot.suffix_reply_enable = flag
+        logger.info('%s: set suffix_reply to %s' % (bot.self.name, flag))
+        emit('suffix_reply', flag)
+        bot.self_msg('已%s后缀发表情' % ('开启' if flag else '关闭'))
 
 
 if __name__ == '__main__':

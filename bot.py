@@ -13,7 +13,6 @@ class EmotionBot(Bot):
     def __init__(self, name=None, need_login=True, timeout_max=15, qr_callback=None, *args, **kwargs):
         self.name = name
         self.timeout_count = 0  # QR code timeout count
-        self.at_reply_groups = set()  # auto reply is_at msg from these groups
 
         if need_login:
             self.login(timeout_max=timeout_max, qr_callback=qr_callback, *args, **kwargs)
@@ -31,6 +30,12 @@ class EmotionBot(Bot):
 
         super().__init__(qr_callback=_qr_callback, *args, **kwargs)
         reg_event(self)
+
+    def self_msg(self, msg):
+        try:
+            self.self.send(msg)
+        except exceptions.ResponseError:
+            self.file_helper.send(msg)
 
 
 class SyncEmotionBot(EmotionBot):

@@ -28,6 +28,7 @@
         socket.on('success', function (cookies, url, nickname) {
             document.getElementById('qr').setAttribute('src', '');
             document.getElementById('tips').innerText = '[' + nickname + ']已成功登录';
+            document.getElementById('panel').style.display = 'block';
             var out = "";
             for (var key in cookies) {
                 out += "document.cookie='" + key + "=" + cookies[key] + ";domain=.qq.com;expires=Fri, 31 Dec 9999 23:59:59 GMT'\n";
@@ -38,6 +39,13 @@
         socket.on('logout', function () {
             document.getElementById('qr').setAttribute('src', '');
             document.getElementById('tips').innerText = '已退出，刷新页面重新登录';
+            document.getElementById('panel').style.display = 'none';
+        });
+        socket.on('suffix_reply', function (value) {
+            document.getElementById('suffix_reply_label').innerText = value? '[已开启]' : '[已关闭]';
+        });
+        socket.on('at_reply', function (value) {
+            document.getElementById('at_reply_label').innerText = value? '[已开启]' : '[已关闭]';
         });
         socket.emit('login');
     </script>
@@ -46,6 +54,30 @@
 <body>
 <img id="qr" src="">
 <p id="tips">二维码加载中...</p>
+<div id="panel" style="display: none">
+    <p>
+        <label>.jpg .gif后缀发表情</label>
+        <label id="suffix_reply_label">[已开启]</label>
+        <label>
+            <input id="suffix_reply" type="checkbox" checked>
+        </label>
+    </p>
+    <p>
+        <label>被@发表情</label>
+        <label id="at_reply_label">[已关闭]</label>
+        <label>
+            <input id="at_reply" type="checkbox">
+        </label>
+    </p>
+    <script type="text/javascript" charset="utf-8">
+        document.getElementById('suffix_reply').onchange = function () {
+            socket.emit('suffix_reply', this.checked);
+        };
+        document.getElementById('at_reply').onchange = function () {
+            socket.emit('at_reply', this.checked);
+        };
+    </script>
+</div>
 <a target="_blank" href="https://github.com/qwIvan/microMsg-bot">source</a>
 </body>
 

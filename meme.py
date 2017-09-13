@@ -29,6 +29,14 @@ def jschl(tag):
     return js2py.eval_js(snippet) + len('www.doutula.com')
 
 
+def large_img(url):
+    if url.startswith('//'):
+        url = 'http:' + url
+    if url.endswith('!dtb'):
+        url = url[:-4]
+    return url.replace('/bmiddle/', '/large/', 1)
+
+
 @lru_cache()
 def search(keyword):
     resp = session.get('https://www.doutula.com/search', params={'keyword': keyword})
@@ -47,7 +55,7 @@ def search(keyword):
 
     soup = BeautifulSoup(resp.text, 'lxml')
     result = ((i.get('data-original'), i.get('data-backup')[:-4]) for i in soup.select('img[data-original]') if i.get('class') != ['gif'])
-    return [[url if not url.startswith('//') else 'http:' + url for url in imgs] for imgs in result]
+    return [[large_img(url) for url in imgs] for imgs in result]
 
 
 def download_gif(f, *url):

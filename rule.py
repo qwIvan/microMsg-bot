@@ -8,6 +8,11 @@ from .logger import logger
 
 
 def reg_event(bot):
+    # bot.at_reply_groups = set()  # TODO
+    # bot.at_reply_blacklist = True  # blacklist (default) or white list
+    bot.suffix_reply_enable = True
+    bot.at_reply_enable = False
+
     @lru_cache()
     def gif_media_id(*url):
         tmp = NamedTemporaryFile()
@@ -20,20 +25,12 @@ def reg_event(bot):
 
     @bot.register(msg_types=TEXT, except_self=False)
     def reply(msg):
-        if msg.sender == bot.self and '开启自动斗图' in msg.text:
-            bot.at_reply_groups.add(msg.receiver)
-            logger.info('群聊<%s>已开启自动斗图' % msg.receiver.name)
-            return '已开启，@我发送文字可以自动斗图'
-        elif msg.sender == bot.self and '关闭自动斗图' in msg.text and msg.receiver in bot.at_reply_groups:
-            bot.at_reply_groups.remove(msg.receiver)
-            logger.info('群聊<%s>已关闭自动斗图' % msg.receiver.name)
-            return '已关闭'
-
         keyword = None
-        if msg.text[-4:] in ('.gif', '.jpg'):
+        if bot.suffix_reply_enable and msg.text[-4:] in ('.gif', '.jpg'):
             keyword = msg.text[:-4]
-        elif msg.is_at and msg.sender in bot.at_reply_groups:
-            keyword = re.sub('@\S+', '', msg.text)
+        elif bot.at_reply_enable and msg.is_at and isinstance(msg.sender, Group):
+            keyword = re.sub('@%s' % msg.sender.self.display_name, '', msg.text, 1).strip()
+            print(msg.sender.self.display_name)
         if keyword:
             img = meme.image_url(keyword)
             if img:
