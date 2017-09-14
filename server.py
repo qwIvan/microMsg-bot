@@ -74,7 +74,7 @@ def login():
                     bot_status[sessionID] = bot.alive
             logger.info('%s logged in, cache at %s', bot.self.name, sessionID)
             success_ack(bot, sessionID, bot.self.name)
-            bot.self_msg('已成功登录\n使用教程git.io/xxx')
+            bot.self_msg('已成功登录\n使用教程 git.io/v59Xt')
         except EmotionBot.TimeoutException as e:
             logger.warning('uuid=%s, status=%s, timeout', e.uuid, e.status)
             socketio.emit('qr', (e.uuid, 'timeout'), room=sessionID)
