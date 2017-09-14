@@ -35,7 +35,7 @@
 
 ### 简易方式
 ```
-docker run -p 80:80 -e KEY=YOUR_SECRET_KEY qwivan/micromsg-bot
+docker run -p 80:80 qwivan/micromsg-bot
 ```
 
 ### 使用 docker volume

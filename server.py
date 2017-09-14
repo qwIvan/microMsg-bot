@@ -9,7 +9,7 @@ from .bot import EmotionBot
 from .logger import logger
 
 app = Flask(__name__)
-app.secret_key = os.environ['KEY']
+app.secret_key = os.environ.get('KEY', 'YOUR_SECRET_KEY')
 socketio = SocketIO(app)
 
 
