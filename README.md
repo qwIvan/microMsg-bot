@@ -1,6 +1,9 @@
 # microMsg-bot
 微信表情机器人，接口来自 doutula
 
+## 斗图群
+![斗图群](https://user-images.githubusercontent.com/7613160/30433688-b0db3dee-9997-11e7-9b70-51923b46f72c.png)
+
 ## 使用方法
 前往 [bot.libivan.com](http://bot.libivan.com)，打开手机微信用摄像头扫描二维码登录。
 
