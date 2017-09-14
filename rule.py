@@ -34,7 +34,7 @@ def reg_event(bot):
         img = meme.image_url(keyword)
         if img:
             media_id = gif_media_id(*img)
-            logger.info('Received keyword "%s", reply image with media_id %s', keyword, media_id)
+            logger.info('image: "%s", media_id: %s', img, media_id)
             return media_id
 
     @bot.register(msg_types=TEXT, except_self=False)
