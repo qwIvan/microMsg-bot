@@ -98,7 +98,7 @@ def at_reply(flag):
         bot.setting.at_reply = flag
         logger.info('%s: set at_reply to %s' % (bot.self.name, flag))
         emit('setting', bot.setting.__dict__)
-        bot.self_msg('已%s被@发表情' % ('开启' if flag else '关闭'))
+        bot.self_msg('已%s被@回复表情' % ('开启' if flag else '关闭'))
 
 
 @socketio.on('suffix_reply')
