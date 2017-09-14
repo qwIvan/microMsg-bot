@@ -46,7 +46,7 @@ def reg_event(bot):
                 msg.reply_image('.gif', media_id=media_id)
                 return
             else:
-                groups = re.findall('(.*)\.(jpg|gif)\s*(x|×|X)(\d+)$', msg.text)
+                groups = re.findall('(.*)\.(jpg|gif)\s*(x|×|X)\s*(\d+)$', msg.text)
                 if groups and groups[0][-1].isdigit():
                     group = groups[0]
                     keyword = group[0]
