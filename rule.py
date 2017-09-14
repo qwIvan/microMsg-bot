@@ -40,13 +40,13 @@ def reg_event(bot):
     @bot.register(msg_types=TEXT, except_self=False)
     def reply(msg: Message):
         if bot.setting.suffix_reply:
-            if msg.text[-4:] in ('.gif', '.jpg'):
+            if msg.text[-4:] in ('.gif', '.jpg', '.png'):
                 keyword = msg.text[:-4]
                 media_id = media_id_by(keyword)
                 msg.reply_image('.gif', media_id=media_id)
                 return
             else:
-                groups = re.findall('(.*)\.(jpg|gif)\s*(x|×|X)\s*(\d+)$', msg.text)
+                groups = re.findall('(.*)\.(jpg|gif|png)\s*(x|×|X)\s*(\d+)$', msg.text)
                 if groups and groups[0][-1].isdigit():
                     group = groups[0]
                     keyword = group[0]
