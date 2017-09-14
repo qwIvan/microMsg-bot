@@ -1,9 +1,6 @@
 # microMsg-bot
 微信表情机器人，接口来自 doutula
 
-## 加入斗图测试群
-![斗图群](https://user-images.githubusercontent.com/7613160/30433688-b0db3dee-9997-11e7-9b70-51923b46f72c.png)
-
 ## 使用方法
 前往 [bot.libivan.com](http://bot.libivan.com)，打开手机微信用摄像头扫描二维码登录。
 
@@ -14,7 +11,6 @@
 
 ![效果图](https://user-images.githubusercontent.com/7613160/30423776-7a3519de-9976-11e7-81c2-5512fb906994.png)
 
-
 ## 被@回复表情
 效果图：
 
@@ -22,6 +18,8 @@
 
 ![效果图](https://user-images.githubusercontent.com/7613160/30422854-b8371384-9973-11e7-97d4-f9f6cdb29496.png)
 
+## 加入斗图测试群
+![斗图群](https://user-images.githubusercontent.com/7613160/30433688-b0db3dee-9997-11e7-9b70-51923b46f72c.png)
 
 ## 挂机
 网页版微信每次离线后，都要扫二维码才能重新登录，因此可以用服务器挂着账号来维持session。
