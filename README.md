@@ -1,7 +1,7 @@
 # microMsg-bot
 微信表情机器人，接口来自 doutula
 
-## 加入斗图群
+## 加入斗图测试群
 ![斗图群](https://user-images.githubusercontent.com/7613160/30433688-b0db3dee-9997-11e7-9b70-51923b46f72c.png)
 
 ## 使用方法
