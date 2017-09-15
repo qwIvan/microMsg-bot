@@ -7,7 +7,7 @@
 ## 后缀发表情
 效果图：
 
-![效果图](https://user-images.githubusercontent.com/7613160/30426397-790f14da-997e-11e7-8738-bb066fea77d6.png)
+![效果图](https://user-images.githubusercontent.com/7613160/30479150-80c80826-9a46-11e7-8629-324d85469511.png)
 
 ![效果图](https://user-images.githubusercontent.com/7613160/30423776-7a3519de-9976-11e7-81c2-5512fb906994.png)
 
