@@ -19,7 +19,7 @@
 ![效果图](https://user-images.githubusercontent.com/7613160/30422854-b8371384-9973-11e7-97d4-f9f6cdb29496.png)
 
 ## 加入斗图测试群
-![斗图群](https://user-images.githubusercontent.com/7613160/30433688-b0db3dee-9997-11e7-9b70-51923b46f72c.png)
+![斗图群](https://github-production-user-asset-6210df.s3.amazonaws.com/7613160/30469351-5f5970fe-9a22-11e7-8c93-4ff03cd496de.png)
 
 ## 挂机
 网页版微信每次离线后，都要扫二维码才能重新登录，因此可以用服务器挂着账号来维持session。
