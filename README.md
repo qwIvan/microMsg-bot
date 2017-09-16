@@ -1,5 +1,12 @@
 # microMsg-bot
-微信表情机器人，接口来自 doutula
+微信表情机器人
+
+## 原理
+
+- 使用了 wxpy ，一个 Python 的微信机器人库
+- 表情利用了 doutula 的搜索接口
+- web 界面 使用了 Flask，一个 Python的 HTTP 库
+- 浏览器端使用了 Socket.IO 来跟服务端通讯
 
 ## 使用方法
 前往 [bot.libivan.com](http://bot.libivan.com)，打开手机微信用摄像头扫描二维码登录。
