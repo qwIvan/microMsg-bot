@@ -45,6 +45,7 @@ class EmotionBot(Bot):
                 with shelve.open('settings') as settings:
                     settings[uin] = self.setting
                     logger.info('%s updated setting', self.self.name)
+
         BotSetting.__setattr__ = save_setting
 
         reg_event(self)
@@ -91,3 +92,8 @@ class SyncEmotionBot(EmotionBot):
 
     def is_logged(self, timeout=None):
         return self.login_lock.wait(timeout)
+
+
+if __name__ == '__main__':
+    bot = EmotionBot(console_qr=True, cache_path='wxpy_bot.pkl')
+    bot.join()

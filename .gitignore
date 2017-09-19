@@ -1,5 +1,5 @@
 *.swp
 .ropeproject/
 __pycache__/
-wxpy.pkl
+*.pkl
 .idea/
