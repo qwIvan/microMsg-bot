@@ -62,7 +62,7 @@ def reg_event(bot):
     gif_media_id = functools.partial(_gif_media_id, bot=bot)
 
     def media_id_by(keyword):
-        logger.info('keyword "%s"', keyword)
+        logger.info('%s searched keyword "%s"', keyword, bot.self.name)
         img = meme.image_url(keyword)
         if img:
             media_id = gif_media_id(*img)
