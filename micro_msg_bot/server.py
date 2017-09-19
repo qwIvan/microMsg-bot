@@ -130,6 +130,7 @@ with shelve.open('bot_status') as bot_status:
                 bot = EmotionBot(timeout_max=0, cache_path=sessionID, qr_callback=qr_callback, logout_callback=get_logout_callback_by_session_id(sessionID))
             except (EmotionBot.TimeoutException, SessionDeadException):
                 logger.info('%s log back in failed', sessionID)
+                del bot_status[sessionID]
                 continue
             bots[sessionID] = bot  # TODO 线程安全问题，用户有可能在此前已经logout
             bot_status[sessionID] = bot.alive
