@@ -29,6 +29,8 @@ def keyword_by_suffix(msg: str):
             if times > 5:
                 times = 5
             return keyword, times
+        else:
+            return None, 0
 
 
 def keyword_by_at(msg: str, name):
