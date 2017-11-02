@@ -12,7 +12,7 @@ session = requests.Session()
 session.headers['user-agent'] = user_agent
 
 
-def jschl(tag):
+def jschl(tag, domain='www.doutula.com'):
     snippet, obj = '', None
     for line in tag.splitlines():
         if 's,t,o,p,b,r,e,a,k,i,n,g' in line and ' ' in line:
@@ -26,7 +26,7 @@ def jschl(tag):
             for seg in line.split(';'):
                 if seg.startswith(obj) and '=' in seg:
                     snippet += seg + ';'
-    return js2py.eval_js(snippet) + len('www.doutula.com')
+    return js2py.eval_js(snippet) + len(domain)
 
 
 def large_img(url):
