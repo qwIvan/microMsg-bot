@@ -48,7 +48,7 @@ def search(keyword):
         form = soup.select_one('form')
         params = dict([(i['name'], i.get('value', None)) for i in form.select('input')])
         params['jschl_answer'] = answer
-        time.sleep(4)
+        time.sleep(5)
         session.get('https://www.doutula.com' + form['action'], params=params, allow_redirects=False)
         logger.info('www.doutula.com new session %s', session.cookies.get_dict())
         resp = session.get('https://www.doutula.com/search', params={'keyword': keyword})
