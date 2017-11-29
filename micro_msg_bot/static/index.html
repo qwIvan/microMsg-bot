@@ -2,7 +2,7 @@
 
 <head>
     <meta charset="utf-8">
-    <title>微信表情机器人</title>
+    <title>李菁菁的机器人</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/2.0.3/socket.io.slim.js"></script>
     <script type="text/javascript" charset="utf-8">
         var socket = io.connect();
@@ -60,20 +60,6 @@
 <img id="qr" src="">
 <p id="tips">二维码加载中...</p>
 <div id="panel" style="display: none">
-    <p>
-        <label>.jpg .gif后缀发表情</label>
-        <label id="suffix_reply_label">[已开启]</label>
-        <label>
-            <input id="suffix_reply" type="checkbox" checked>
-        </label>
-    </p>
-    <p>
-        <label>被@回复表情</label>
-        <label id="at_reply_label">[已关闭]</label>
-        <label>
-            <input id="at_reply" type="checkbox">
-        </label>
-    </p>
     <script type="text/javascript" charset="utf-8">
         document.getElementById('suffix_reply').onchange = function () {
             socket.emit('suffix_reply', this.checked);
@@ -83,7 +69,6 @@
         };
     </script>
 </div>
-<a target="_blank" href="https://github.com/qwIvan/microMsg-bot/blob/master/README.md">使用教程</a>
 </body>
 
 </html>

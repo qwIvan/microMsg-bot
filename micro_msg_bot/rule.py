@@ -71,13 +71,59 @@ def reg_event(bot):
             logger.info('image: "%s", media_id: %s', img, media_id)
             return media_id
 
-    @bot.register(msg_types=TEXT, except_self=False)
-    def reply(msg: Message):
-        keyword, times = None, 0
-        if bot.setting.suffix_reply:
-            keyword, times = keyword_by_suffix(msg.text)
-        if not keyword and bot.setting.at_reply and msg.is_at and isinstance(msg.sender, Group):
-            keyword, times = keyword_by_at(msg.text, msg.sender.self.name)
+    print('okok')
+    fxh = None
+    hksx = None
+    for g in bot.groups(update=False):
+        if g.self.display_name == '分享会':
+            fxh = g
+            print(g)
+        elif g.self.display_name == '香港实习':
+            hksx = g
+            print(g)
+    #if not fxh or not hksx:
+    #    print('groups not found')
+    #    sys.exit(333)
 
-        for media_id in pool.map(media_id_by, [keyword] * times, chunksize=times):
-            msg.reply_image('.gif', media_id=media_id)
+    @bot.register(msg_types=TEXT)
+    def handle_text(msg: Message):
+        print(msg)
+        if isinstance(msg.sender, Group):
+            return
+        if msg.text.strip() == '分享会':
+            try:
+                fxh.add_members(msg.sender, use_invitation=True)
+            except:
+                bot.add_friend(msg.sender)
+                fxh.add_members(msg.sender, use_invitation=True)
+        elif msg.text.strip() == '香港实习':
+            try:
+                hksx.add_members(msg.sender, use_invitation=True)
+            except:
+                bot.add_friend(msg.sender)
+                hksx.add_members(msg.sender, use_invitation=True)
+
+    # fds = []
+
+    @bot.register(msg_types=FRIENDS)
+    def accept_friends(msg: Message):
+        print(msg)
+        text = msg.text.strip()
+        print(text)
+        new_friend = msg.card.accept()
+        print(new_friend)
+        fxh.add_members(new_friend, use_invitation=True)
+        print('invited')
+        new_friend.send('''哇，终于等到你！  [太阳]回复关键词“分享会”，即可直接获得进群链接哟~  未来还会有更多牛逼的师兄师姐将以线上分享的方式在微信群开讲！满满的干货，让我们一起加油成长起来[转圈]''')
+        # fds.append(new_friend)
+
+    @bot.register(msg_types=NOTE)
+    def accept_friends(msg: Message):
+        print(msg)
+        print(msg.text)
+        if '刚刚把你添加到通讯录' in msg.text or '请先发送朋友验证请求' in msg.text:
+            bot.add_friend(msg.sender)
+            print('add')
+        fxh.add_members(msg.sender, use_invitation=True)
+        msg.sender.send('''哇，终于等到你！  [太阳]回复关键词“分享会”，即可直接获得进群链接哟~  未来还会有更多牛逼的师兄师姐将以线上分享的方式在微信群开讲！满满的干货，让我们一起加油成长起来[转圈]''')
+
