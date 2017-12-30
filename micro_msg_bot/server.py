@@ -18,17 +18,7 @@ def login():
     if 'sessionID' not in session:
         session['sessionID'] = str(secrets.randbits(256))
     return app.send_static_file('index.html')
-#     def qr_callback(uuid, status, qrcode):
-#         logger.info('uuid=%s, status=%s', uuid, status)
-#
-#     def login_calback():
-#         bot.print_cookies()
-#
-#     try:
-#         bot = SyncEmotionBot(qr_callback=qr_callback, timeout_max=15, login_callback=login_calback)
-#     except EmotionBot.TimeoutException as e:
-#         logger.warning('uuid=%s, status=%s, timeout', e.uuid, e.status)
-#     return '<img src=http://login.weixin.qq.com/qrcode/%s >' % bot.uuid
+
 
 bots = {}
 bot_status_lock = Lock()
@@ -44,12 +34,12 @@ def get_logout_callback_by_session_id(sessionID):
             del bots[sessionID]
         os.remove(sessionID)
         socketio.emit('logout', room=sessionID)
+
     return logout_callback
 
 
 @socketio.on('login')
 def login():
-
     def success_ack(bot, sessionID, nickname):
         socketio.emit('setting', bot.setting.__dict__, room=sessionID)
         socketio.emit('success', (dict(bot.core.s.cookies.items()), bot.core.loginInfo['url'], nickname), room=sessionID)
