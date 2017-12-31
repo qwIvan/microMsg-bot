@@ -64,7 +64,6 @@ def reg_event(bot):
     gif_media_id = functools.partial(_gif_media_id, bot=bot)
 
     def media_id_by(keyword):
-        logger.info('%s searched keyword "%s"', bot.self.name, keyword)
         img = meme.image_url(keyword)
         if img:
             media_id = gif_media_id(*img)
@@ -79,5 +78,6 @@ def reg_event(bot):
         if not keyword and bot.setting.at_reply and msg.is_at and isinstance(msg.sender, Group):
             keyword, times = keyword_by_at(msg.text, msg.sender.self.name)
 
+        logger.info('%s searched keyword "%s" x %d', bot.self.name, keyword, times)
         for media_id in pool.map(media_id_by, [keyword] * times, chunksize=times):
             msg.reply_image('.gif', media_id=media_id)
