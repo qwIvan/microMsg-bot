@@ -17,7 +17,7 @@ class BotSetting:
 
 
 def keyword_by_suffix(msg: str):
-    if msg.lower().strip()[-4:] in ('.gif', '.jpg', '.png'):
+    if msg.lower().strip()[-4:] in ('.gif', '.jpg', '.png', '.webp'):
         keyword = msg.strip()[:-4].strip()
         return keyword, 1
     else:
@@ -78,6 +78,7 @@ def reg_event(bot):
         if not keyword and bot.setting.at_reply and msg.is_at and isinstance(msg.sender, Group):
             keyword, times = keyword_by_at(msg.text, msg.sender.self.name)
 
-        logger.info('%s searched keyword "%s" x %d', bot.self.name, keyword, times)
+        if keyword:
+            logger.info('%s searched keyword "%s" x %d', bot.self.name, keyword, times)
         for media_id in pool.map(media_id_by, [keyword] * times, chunksize=times):
             msg.reply_image('.gif', media_id=media_id)
