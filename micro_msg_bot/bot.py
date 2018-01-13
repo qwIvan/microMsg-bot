@@ -32,7 +32,7 @@ class EmotionBot(Bot):
             if callable(qr_callback):
                 qr_callback(uuid, status, qrcode)
 
-        super().__init__(qr_callback=_qr_callback, *args, **kwargs)
+        super().__init__(qr_callback=_qr_callback if qr_callback else None, *args, **kwargs)
 
         uin = str(self.self.uin)
         with settings_lock:
