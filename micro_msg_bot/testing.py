@@ -4,6 +4,8 @@ def test_keyword_by_suffix():
     assert keyword_by_suffix('  呵呵  .gIf    ') == ('呵呵', 1)
     assert keyword_by_suffix('  呵呵   .jpG    *3   ') == ('呵呵', 3)
     assert keyword_by_suffix('  呵呵   .Png    *6   ') == ('呵呵', 5)
+    assert keyword_by_suffix('     .WebP    ') == ('', 1)
+    assert keyword_by_suffix('     故事.WebP    ') == ('故事', 1)
 
 
 def test_keyword_by_at():

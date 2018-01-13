@@ -17,9 +17,9 @@ class BotSetting:
 
 
 def keyword_by_suffix(msg: str):
-    if msg.lower().strip()[-4:] in ('.gif', '.jpg', '.png', '.webp'):
-        keyword = msg.strip()[:-4].strip()
-        return keyword, 1
+    prefix, _, suffix = msg.lower().strip().rpartition('.')
+    if suffix.strip() in ('gif', 'jpg', 'png', 'webp'):
+        return prefix.strip(), 1
     else:
         groups = re.findall('(.*)\.(jpg|gif|png|webp)\s*(x|×|X|\*)\s*(\d+)\s*$', msg, re.I)
         if groups and groups[0][-1].isdigit():
@@ -80,5 +80,5 @@ def reg_event(bot):
 
         if keyword:
             logger.info('%s searched keyword "%s" x %d', bot.self.name, keyword, times)
-        for media_id in pool.map(media_id_by, [keyword] * times, chunksize=times):
-            msg.reply_image('.gif', media_id=media_id)
+            for media_id in pool.map(media_id_by, [keyword] * times, chunksize=times):
+                msg.reply_image('.gif', media_id=media_id)
