@@ -21,7 +21,7 @@ def keyword_by_suffix(msg: str):
         keyword = msg.strip()[:-4].strip()
         return keyword, 1
     else:
-        groups = re.findall('(.*)\.(jpg|gif|png)\s*(x|×|X|\*)\s*(\d+)\s*$', msg, re.I)
+        groups = re.findall('(.*)\.(jpg|gif|png|webp)\s*(x|×|X|\*)\s*(\d+)\s*$', msg, re.I)
         if groups and groups[0][-1].isdigit():
             group = groups[0]
             keyword = group[0].strip()
