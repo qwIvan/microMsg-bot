@@ -8,8 +8,10 @@
         var socket = io.connect();
         socket.on('qr', function (code, status) {
             console.log(code, status);
+            var bot_id;
             switch (status) {
                 case '0':
+                    bot_id = code;
                     document.getElementById('qr').setAttribute('src', 'https://login.weixin.qq.com/qrcode/' + code);
                     document.getElementById('tips').innerText = '请打开微信用摄像头扫描二维码';
                     break;
@@ -19,9 +21,11 @@
                 case '200':
                     break;
                 case 'timeout':
-                    document.getElementById('qr').setAttribute('src', '');
-                    document.getElementById('tips').innerText = '二维码过期，等待刷新';
-                    socket.emit('login');
+                    if (code === bot_id) {
+                        document.getElementById('qr').setAttribute('src', '');
+                        document.getElementById('tips').innerText = '二维码过期，等待刷新';
+                        socket.emit('login');
+                    }
                     break;
             }
         });
