@@ -73,7 +73,7 @@ def login():
         return
     join_room(room=session['sessionID'], sid=request.sid)
     bot = bots.get(session['sessionID'], None)
-    if hasattr(bot, 'alive') and bot.alive and hasattr(bot, 'self') and hasattr(bot.self, 'name') and bot.self.name:
+    if hasattr(bot, 'alive') and bot.alive and hasattr(bot, 'self') and hasattr(bot.self, 'name'):
         success_ack(bot, request.sid, bot.self.name)
     else:
         socketio.start_background_task(background_thread, sid=request.sid, sessionID=session['sessionID'])
