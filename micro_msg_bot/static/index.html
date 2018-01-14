@@ -6,9 +6,9 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/2.0.3/socket.io.slim.js"></script>
     <script type="text/javascript" charset="utf-8">
         var socket = io.connect();
+        var bot_id;
         socket.on('qr', function (code, status) {
             console.log(code, status);
-            var bot_id;
             switch (status) {
                 case '0':
                     bot_id = code;
