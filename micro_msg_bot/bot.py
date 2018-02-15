@@ -92,8 +92,3 @@ class SyncEmotionBot(EmotionBot):
 
     def is_logged(self, timeout=None):
         return self.login_lock.wait(timeout)
-
-
-if __name__ == '__main__':
-    bot = EmotionBot(console_qr=True, cache_path='wxpy_bot.pkl')
-    bot.join()
