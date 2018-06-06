@@ -35,7 +35,7 @@ def keyword_by_suffix(msg: str):
 
 def keyword_by_at(msg: str, name):
     keyword = re.sub('@%s' % name, '', msg, 1).strip()
-    groups = re.findall('(.*)\s*(x|×|X|\*)\s*(\d+)\s*$', keyword)
+    groups = re.findall('(.*)\s*(x|×|X|✖️|\*)\s*(\d+)\s*$', keyword)
     if groups and groups[0][-1].isdigit():
         group = groups[0]
         keyword = group[0].strip()
