@@ -51,5 +51,5 @@ docker run -p 80:80 qwivan/micromsg-bot
 ### 使用 docker volume
 ```
 docker volume create mmbot
-docker run -t -p 80:80 -e KEY=YOUR_SECRET_KEY -v mmbot:/data qwivan/micromsg-bot
+docker run -t -p 80:80 -e KEY=YOUR_SECRET_KEY --name mmbot -v mmbot:/data qwivan/micromsg-bot
 ```
