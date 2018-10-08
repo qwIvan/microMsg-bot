@@ -1,4 +1,4 @@
-FROM python:alpine
+FROM python:3.6-alpine
 RUN apk add --no-cache libxslt-dev
 RUN apk add --no-cache --virtual .build-deps gcc libxml2-dev libc-dev \
   && pip install --no-cache-dir wxpy bs4 lxml flask gunicorn==18.0 flask_socketio eventlet js2py \
