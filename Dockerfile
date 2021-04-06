@@ -1,7 +1,7 @@
 FROM python:3.6-alpine
 RUN apk add --no-cache libxslt-dev
 RUN apk add --no-cache --virtual .build-deps gcc g++ libxml2-dev libc-dev \
-  && pip install --no-cache-dir wxpy bs4 lxml flask gunicorn==18.0 flask_socketio eventlet \
+  && pip install --no-cache-dir wxpy bs4 lxml flask gunicorn==18.0 flask_socketio<5 eventlet \
   && apk del .build-deps
 EXPOSE 80
 ADD micro_msg_bot /micro_msg_bot
