@@ -10,7 +10,10 @@ from .logger import logger
 
 app = Flask(__name__)
 app.secret_key = os.environ.get('KEY', 'YOUR_SECRET_KEY')
-socketio = SocketIO(app, cors_allowed_origins=os.environ.get('CORS_ALLOWED_ORIGINS', None))
+cors_allowed_origins = None
+if 'CORS_ALLOWED_ORIGINS' in os.environ:
+    cors_allowed_origins = os.environ['CORS_ALLOWED_ORIGINS'].split(',')
+socketio = SocketIO(app, cors_allowed_origins=cors_allowed_origins)
 
 
 @app.route('/')
